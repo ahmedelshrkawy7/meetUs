@@ -1,7 +1,17 @@
+import { getToken } from "@/utils/auth";
 import React from "react";
+import { Navigate } from "react-router-dom";
 
-const ProtectedRoute = () => {
-  return <div></div>;
+interface protectedRouteProps {
+  children: React.ReactNode;
+}
+
+const ProtectedRoute = ({ children }: protectedRouteProps) => {
+  if (getToken()) {
+    return <>{children}</>;
+  }
+
+  return <Navigate to="/login" />;
 };
 
 export default ProtectedRoute;

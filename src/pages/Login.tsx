@@ -4,6 +4,8 @@ import * as Yup from "yup";
 import { Input } from "@/components/ui/input"; // Adjust the import path as per your project structure
 import { Mail, Lock, Eye, EyeOff } from "lucide-react"; // Icon library
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 interface Values {
   email: string;
@@ -12,6 +14,7 @@ interface Values {
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   // Validation Schema using Yup
   const validationSchema = Yup.object({
@@ -40,8 +43,8 @@ const Login = () => {
           isEmployee: true,
         }
       );
-
-      console.log(response.data);
+      Cookies.set("accessToken", JSON.stringify(response.data));
+      navigate("/");
     } catch (error) {
       console.error(error);
     }
