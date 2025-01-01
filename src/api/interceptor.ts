@@ -5,6 +5,7 @@ import axios, {
 } from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { getToken, removeToken } from "@/utils/auth"; // Adjust with your token management functions
+import { redirect } from "react-router-dom";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
@@ -40,8 +41,8 @@ const refreshAccessToken = async (): Promise<string | null> => {
     const response = await axios.post(`${baseURL}/auth/refresh`, {
       refreshToken,
     });
-    const newAccessToken = response.data.accessToken;
-    const newRefreshToken = response.data.refreshToken;
+    const newAccessToken = response.data.token;
+    const newRefreshToken = response.data.refresh;
 
     // Save the new tokens
     // setToken(newAccessToken, newRefreshToken);
@@ -50,7 +51,7 @@ const refreshAccessToken = async (): Promise<string | null> => {
   } catch (error) {
     showToast("Error", "Session expired. Please log in again.");
     removeToken(); // Clear tokens from storage
-    window.location.href = "/"; // Redirect to login
+    redirect("/login");
     return null;
   }
 };
