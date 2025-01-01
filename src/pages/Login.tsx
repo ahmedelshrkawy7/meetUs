@@ -18,6 +18,8 @@ interface Values {
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [loader, setLoader] = useState(false);
+
   const navigate = useNavigate();
 
   const { toast } = useToast();
@@ -42,6 +44,7 @@ const Login = () => {
 
   // Handles form submission
   const handleFormSubmission = async (values: Values) => {
+    setLoader(true);
     try {
       const response = await axios.post(
         "https://api-yeshtery.dev.meetusvr.com/v1/yeshtery/token",
@@ -71,6 +74,8 @@ const Login = () => {
         title: "user name or password is wrong",
         action: <ToastAction altText="Close">Close</ToastAction>, // Optional action like closing the toast
       });
+    } finally {
+      setLoader(false);
     }
   };
   if (getToken()) {
@@ -161,11 +166,18 @@ const Login = () => {
                 <button
                   type="submit"
                   disabled={!isValid || !dirty}
-                  className={`w-full bg-[#ff00ee] text-white py-3 mt-10 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                  className={`w-full bg-[#ff00ee] text-white py-3 text-center mt-10 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
                     !isValid || !dirty ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                 >
-                  Login
+                  {" "}
+                  {!loader ? (
+                    "login"
+                  ) : (
+                    <div className="text-center w-full flex justify-center">
+                      <div className="w-8 h-8 border-4 border-t-white border-blue-500  border-solid rounded-full animate-spin text-center"></div>
+                    </div>
+                  )}
                 </button>
               </Form>
             )}
