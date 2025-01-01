@@ -51,8 +51,9 @@ const Login = () => {
           isEmployee: true,
         }
       );
-      localStorage.setItem("userData", response.data.userData);
-      Cookies.set("accessToken", JSON.stringify(response.data));
+      const { token, refresh, userInfo } = response.data;
+      localStorage.setItem("userData", JSON.stringify(userInfo));
+      Cookies.set("accessToken", JSON.stringify({ token, refresh }));
       navigate("/");
       toast({
         variant: "default", // Using default variant
@@ -61,10 +62,15 @@ const Login = () => {
         action: <ToastAction altText="Close">Close</ToastAction>, // Optional action like closing the toast
         style: { backgroundColor: "green", color: "white" }, // Custom style for success appearance
       });
-      setCurrentUser(response.data.userData);
+      setCurrentUser(userInfo);
       console.log("🚀 ~ handleFormSubmission ~ response:", response);
     } catch (error) {
       console.error(error);
+      toast({
+        variant: "destructive", // Using default variant
+        title: "user name or password is wrong",
+        action: <ToastAction altText="Close">Close</ToastAction>, // Optional action like closing the toast
+      });
     }
   };
   if (getToken()) {

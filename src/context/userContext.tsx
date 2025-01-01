@@ -2,10 +2,14 @@ import React, { createContext, useContext, ReactNode } from "react";
 
 // Define the type for the user object
 interface User {
-  // Define properties of the user here (e.g., name, email, etc.)
-  name?: string;
-  email?: string;
-  // Add more fields as needed
+  id: number;
+  name: string;
+  email: string;
+  imageUrl: string | null;
+  isEmployee: boolean;
+  organizationId: number;
+  roles: string[];
+  shopId: number;
 }
 
 // Define the type for the context value
@@ -18,7 +22,9 @@ interface UserContextType {
 const userContext = createContext<UserContextType | undefined>(undefined);
 
 const UserContextProvider = ({ children }: { children: ReactNode }) => {
-  const [currentUser, setCurrentUser] = React.useState<User>({});
+  const [currentUser, setCurrentUser] = React.useState<User>(
+    JSON.parse(localStorage.getItem("userData") || "{}")
+  );
 
   return (
     <userContext.Provider value={{ currentUser, setCurrentUser }}>
