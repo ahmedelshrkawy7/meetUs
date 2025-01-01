@@ -7,7 +7,7 @@ const Nav = () => {
   const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
 
   return (
-    <nav className="bg-gray-900 text-white p-4 w-screen">
+    <nav className="bg-gray-900 text-white p-4 ">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         {/* Logo */}
         <div className="text-2xl font-bold">MyLogo</div>

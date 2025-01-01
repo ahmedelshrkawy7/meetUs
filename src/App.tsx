@@ -32,7 +32,7 @@ function Layout() {
     <div className="flex">
       <Sidebar />
 
-      <div className="flex flex-col">
+      <div className="flex flex-col flex-1">
         <Nav />
         <div>
           <Outlet />
