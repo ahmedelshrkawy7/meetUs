@@ -1,13 +1,25 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react"; // Icons for mobile toggle
+import { removeToken } from "@/utils/auth";
+import { useNavigate } from "react-router-dom";
 
 const Nav = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
 
+  const navigate = useNavigate();
+
+  // Logout function (you can customize this based on your authentication system)
+  const logout = () => {
+    console.log("object");
+    localStorage.removeItem("userData"); // Example: Remove the authentication token
+    removeToken();
+    navigate("/login");
+  };
+
   return (
-    <nav className="bg-gray-900 text-white p-4 ">
+    <nav className="bg-gray-900 text-white p-4">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         {/* Logo */}
         <div className="text-2xl font-bold">MyLogo</div>
@@ -26,12 +38,15 @@ const Nav = () => {
           <a href="/contact" className="hover:text-indigo-400">
             Contact
           </a>
+          {/* Logout Button */}
+          <button onClick={logout} className="text-red-500 hover:text-red-400">
+            Logout
+          </button>
         </div>
 
         {/* Hamburger Menu Icon for Mobile */}
         <div className="md:hidden">
-          {/* <Button
-            variant="link"
+          <button
             onClick={toggleMobileMenu}
             className="text-white focus:outline-none"
           >
@@ -40,7 +55,7 @@ const Nav = () => {
             ) : (
               <Menu className="w-6 h-6" />
             )}
-          </Button> */}
+          </button>
         </div>
       </div>
 
@@ -62,6 +77,13 @@ const Nav = () => {
         <a href="/contact" className="block hover:text-indigo-400">
           Contact
         </a>
+        {/* Mobile Logout Button */}
+        <button
+          onClick={logout}
+          className="block text-red-500 hover:text-red-400"
+        >
+          Logout
+        </button>
       </div>
     </nav>
   );
