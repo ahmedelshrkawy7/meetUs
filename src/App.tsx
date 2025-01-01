@@ -29,12 +29,11 @@ const router = createBrowserRouter([
 
 function Layout() {
   return (
-    <div>
+    <div className="flex">
       <Sidebar />
 
-      <div>
+      <div className="flex flex-col">
         <Nav />
-
         <div>
           <Outlet />
         </div>

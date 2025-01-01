@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Formik, Form, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { Input } from "@/components/ui/input"; // Adjust the import path as per your project structure
@@ -9,6 +9,7 @@ import Cookies from "js-cookie";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 import { getToken } from "@/utils/auth";
+import { useUserContext } from "@/context/userContext";
 
 interface Values {
   email: string;
@@ -37,6 +38,8 @@ const Login = () => {
     password: "",
   };
 
+  const { setCurrentUser } = useUserContext();
+
   // Handles form submission
   const handleFormSubmission = async (values: Values) => {
     try {
@@ -48,6 +51,7 @@ const Login = () => {
           isEmployee: true,
         }
       );
+      localStorage.setItem("userData", response.data.userData);
       Cookies.set("accessToken", JSON.stringify(response.data));
       navigate("/");
       toast({
@@ -57,6 +61,8 @@ const Login = () => {
         action: <ToastAction altText="Close">Close</ToastAction>, // Optional action like closing the toast
         style: { backgroundColor: "green", color: "white" }, // Custom style for success appearance
       });
+      setCurrentUser(response.data.userData);
+      console.log("🚀 ~ handleFormSubmission ~ response:", response);
     } catch (error) {
       console.error(error);
     }
