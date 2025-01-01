@@ -3,12 +3,14 @@ import axios, {
   AxiosError,
   InternalAxiosRequestConfig,
 } from "axios";
-import { toast } from "@/components/ui/use-toast";
-import { setGlobalLoading } from "@/context/LoadingContext";
-import { getToken } from "@/utils/auth";
+import { useToast } from "@/hooks/use-toast";
+import { getToken, removeToken } from "@/utils/auth"; // Adjust with your token management functions
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
+const { toast } = useToast();
+
+// Create Axios instance
 const axiosInstance = axios.create({
   baseURL: baseURL,
 });
@@ -27,57 +29,77 @@ export const showToast = (
   });
 };
 
+// Token refreshing function
+const refreshAccessToken = async (): Promise<string | null> => {
+  try {
+    const refreshToken = getToken().refreshToken; // Retrieve the refresh token
+    if (!refreshToken) {
+      throw new Error("No refresh token available");
+    }
+
+    const response = await axios.post(`${baseURL}/auth/refresh`, {
+      refreshToken,
+    });
+    const newAccessToken = response.data.accessToken;
+    const newRefreshToken = response.data.refreshToken;
+
+    // Save the new tokens
+    // setToken(newAccessToken, newRefreshToken);
+
+    return newAccessToken;
+  } catch (error) {
+    showToast("Error", "Session expired. Please log in again.");
+    removeToken(); // Clear tokens from storage
+    window.location.href = "/"; // Redirect to login
+    return null;
+  }
+};
+
+// Request interceptor
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    setGlobalLoading(true);
-
-    const token = getToken();
-
-    config.headers.Authorization = `Bearer ${token}`;
-    // config.headers['Content-Type'] = 'application/json'
-    config.headers["Content-Type"] = "multipart/form-data";
-
-    config.headers["Accept"] = "*/*";
-    // config.headers['Accept'] = 'multipart/form-data'
-
+    const token = getToken().token;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    config.headers["Content-Type"] = "application/json";
     return config;
   },
   (error: AxiosError) => {
-    setGlobalLoading(false);
     showToast("Error", "An error occurred while making the request.");
     return Promise.reject(error);
   }
 );
 
+// Response interceptor
 axiosInstance.interceptors.response.use(
-  (response: AxiosResponse) => {
-    setGlobalLoading(false);
-    return response;
-  },
-  (error) => {
-    setGlobalLoading(false);
-    console.log("====================================");
-    console.log(error);
-    console.log("====================================");
-    if (error.status === 400) {
-      showToast("Error", "Bad Request");
+  (response: AxiosResponse) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      const newAccessToken = await refreshAccessToken();
+      if (newAccessToken) {
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return axiosInstance(originalRequest);
+      }
     }
-    if (error.status === 500) {
-      showToast("Error", "Internal Server Error");
-    }
+
     if (error.response?.status === 401) {
-      showToast("Error", "Unauthorized access - token expired.");
-      window.location.href = "/";
+      showToast("Error", "Unauthorized access. Please log in.");
+      removeToken(); // Clear tokens from storage
+      window.location.href = "/"; // Redirect to login
+    } else if (error.response?.status === 500) {
+      showToast("Error", "Internal Server Error");
     } else {
-      console.log("====================================");
-      console.log(error.response?.data?.data.message);
-      console.log("====================================");
       showToast(
-        error.response?.data?.data.message,
-        `Error: ${error.response?.status} - ${error.response?.data?.data?.message}`
+        "Error",
+        error.response?.data?.message || "An unknown error occurred."
       );
-      // window.location.href = "/";
     }
+
     return Promise.reject(error);
   }
 );

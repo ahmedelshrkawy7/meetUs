@@ -4,8 +4,11 @@ import * as Yup from "yup";
 import { Input } from "@/components/ui/input"; // Adjust the import path as per your project structure
 import { Mail, Lock, Eye, EyeOff } from "lucide-react"; // Icon library
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@radix-ui/react-toast";
+import { getToken } from "@/utils/auth";
 
 interface Values {
   email: string;
@@ -15,6 +18,8 @@ interface Values {
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  const { toast } = useToast();
 
   // Validation Schema using Yup
   const validationSchema = Yup.object({
@@ -45,10 +50,20 @@ const Login = () => {
       );
       Cookies.set("accessToken", JSON.stringify(response.data));
       navigate("/");
+      toast({
+        variant: "default", // Using default variant
+        title: "Success! You're logged in.",
+        description: "Welcome back! You have successfully logged in.",
+        action: <ToastAction altText="Close">Close</ToastAction>, // Optional action like closing the toast
+        style: { backgroundColor: "green", color: "white" }, // Custom style for success appearance
+      });
     } catch (error) {
       console.error(error);
     }
   };
+  if (getToken()) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <section className="flex justify-between items-center bg-[url('/logo.png')] bg-right bg-cover bg-no-repeat">

@@ -55,3 +55,17 @@
     --radius: 0.5rem;
   }
 }
+
+.toast-container {
+  position: fixed;
+  top: 1rem !important;
+  right: 1rem;
+  z-index: 9999; /* Ensure the toast appears above other content */
+  max-width: 300px; /* Adjust max width of the toast */
+}
+
+/* Optional: Toast style for success */
+.toast-success {
+  background-color: #4caf50; /* Green color */
+  color: white;
+}
