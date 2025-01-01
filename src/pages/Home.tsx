@@ -31,7 +31,7 @@ const Home = () => {
           </h2>
           <p className="text-gray-600">{currentUser.email}</p>
           <p className="text-gray-500 text-sm mt-2">
-            Role: {currentUser.roles.join(", ")}
+            Role: {currentUser.roles}
           </p>
           <p className="text-gray-500 text-sm">
             Organization ID: {currentUser.organizationId}
