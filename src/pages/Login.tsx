@@ -106,7 +106,7 @@ const Login = () => {
               isValid,
               dirty,
             }) => (
-              <Form className="flex flex-col gap-8 bg-white/90 rounded-lg p-5">
+              <Form className="flex flex-col gap-8 bg-white/80 md:bg-transparent rounded-lg p-5">
                 {/* Email Input */}
                 <div className="relative">
                   <span className="absolute inset-y-0 left-3 flex items-center">
