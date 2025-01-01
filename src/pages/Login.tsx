@@ -29,9 +29,22 @@ const Login = () => {
     password: "",
   };
 
-  // Form Submission Handler
-  const handleSubmit = (values) => {
-    console.log("Form Submitted", values);
+  // Handles form submission
+  const handleFormSubmission = async (values: Values) => {
+    try {
+      const response = await axios.post(
+        "https://api-yeshtery.dev.meetusvr.com/v1/yeshtery/token",
+        {
+          email: values.email,
+          password: values.password,
+          isEmployee: true,
+        }
+      );
+
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -47,19 +60,7 @@ const Login = () => {
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
-            onSubmit={(
-              values: Values,
-              { setSubmitting }: FormikHelpers<Values>
-            ) => {
-              axios.post(
-                "https://api-yeshtery.dev.meetusvr.com/v1/yeshtery/token",
-                {
-                  email: values.email,
-                  password: values.password,
-                  isEmployee: true,
-                }
-              );
-            }}
+            onSubmit={handleFormSubmission}
           >
             {({
               values,
@@ -70,7 +71,7 @@ const Login = () => {
               isValid,
               dirty,
             }) => (
-              <Form className="flex flex-col gap-5 bg-white/90 rounded-lg p-5">
+              <Form className="flex flex-col gap-8 bg-white/90 rounded-lg p-5">
                 {/* Email Input */}
                 <div className="relative">
                   <span className="absolute inset-y-0 left-3 flex items-center">
@@ -90,7 +91,7 @@ const Login = () => {
                   <ErrorMessage
                     name="email"
                     component="div"
-                    className="text-sm text-red-500 mt-1"
+                    className="text-sm text-red-500 mt-1 absolute -bottom-7 left-0"
                   />
                 </div>
                 {/* Password Input */}
@@ -124,7 +125,7 @@ const Login = () => {
                   <ErrorMessage
                     name="password"
                     component="div"
-                    className="text-sm text-red-500 mt-1"
+                    className="text-sm text-red-500  absolute -bottom-8 left-0"
                   />
                 </div>
                 <button

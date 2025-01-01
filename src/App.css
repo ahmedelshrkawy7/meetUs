@@ -46,7 +46,8 @@
 } */
 
 .input {
-  @apply px-10 py-7 border-none bg-white border-2 border-gray-300 outline-2 outline-gray-400 shadow-md;
+  @apply px-10 py-7 border-none 
+  !bg-white border-2 border-gray-300 outline-2 outline-gray-400 shadow-md;
 }
 
 @layer base {
